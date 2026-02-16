@@ -2,6 +2,6 @@ package Entidades;
 
 public enum TipoItem {
     POCION_PEQUENA,
-    POCIOM_GRANDE,
+    POCION_GRANDE,
     ELIXIR
 }

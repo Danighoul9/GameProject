@@ -9,7 +9,7 @@ public class Sala {
     //Constructor
     public Sala(int numeroSala, boolean completada) {
         this.numeroSala = numeroSala;
-        this.completada = completada;
+        this.completada = false;
         this.enemigos = new ArrayList();
     }
 

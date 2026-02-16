@@ -1,4 +1,6 @@
-package Entidades;
+package Servicios;
+
+import Entidades.Enemigo;
 
 import java.util.ArrayList;
 

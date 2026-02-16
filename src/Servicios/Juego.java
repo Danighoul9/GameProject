@@ -1,7 +1,6 @@
 package Servicios;
 
 import Entidades.Heroe;
-import Entidades.Sala;
 
 import java.util.ArrayList;
 

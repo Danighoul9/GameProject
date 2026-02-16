@@ -1,16 +1,19 @@
 package Entidades;
 
+import java.util.ArrayList;
+
 public class Sala {
 
     private int numeroSala;
     private boolean completada;
-    private List<Enemigo> enemigos;
+    private ArrayList<Enemigo> enemigos;
 
     //Constructor
-    public Sala(int numeroSala, boolean completada) {
+    public Sala(int numeroSala) {
         this.numeroSala = numeroSala;
         this.completada = false;
-        this.enemigos = new ArrayList();
+        this.enemigos = new ArrayList<>();
+        generarEnemigos();
     }
 
     //Getter y setters
@@ -30,12 +33,8 @@ public class Sala {
         this.completada = completada;
     }
 
-    public List<Enemigo> getEnemigos() {
+    public ArrayList<Enemigo> getEnemigos() {
         return enemigos;
-    }
-
-    public void setEnemigos(List<Enemigo> enemigos) {
-        this.enemigos = enemigos;
     }
 
     //toString
@@ -51,7 +50,13 @@ public class Sala {
 
     //Metodos
     public void generarEnemigos() {
+        switch (this.numeroSala){
+            case 1,2:
 
+            case 3,4:
+
+            case 5:
+        }
     }
 
     public boolean todosEnemigosMuertos() {
@@ -74,5 +79,3 @@ public class Sala {
     }
 }
 
-
-}

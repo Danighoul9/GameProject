@@ -83,7 +83,8 @@ public class Heroe extends Personaje{
     public void usarHabilidadEspecial(Personaje objetivo){
         if (this.tipo == TipoHeroe.GUERRERO){
             System.out.println("GOLPE PODEROSO");
-
+            atacar(objetivo);
+            atacar(objetivo);
         }
         if (this.tipo == TipoHeroe.MAGO){
             System.out.println("BOLA DE FUEGO");
@@ -91,7 +92,7 @@ public class Heroe extends Personaje{
         }
         if (this.tipo == TipoHeroe.ARQUERO){
             System.out.println("DISPARO PRECISO");
-
+            recibirDanio(this.ataque);
         }
     }
 
@@ -103,6 +104,9 @@ public class Heroe extends Personaje{
         this.experiencia += exp;
     }
 
+    /**
+     * Sube de nivel al heroe
+     */
     public void subirNivel(){
         if (this.experiencia >= 100){
             this.puntosVidaMax += 20;
@@ -113,6 +117,7 @@ public class Heroe extends Personaje{
     }
 
     public void usarItem(Item item){
+
     }
 
 

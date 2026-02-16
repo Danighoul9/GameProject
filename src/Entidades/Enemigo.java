@@ -42,7 +42,8 @@ public class Enemigo extends Personaje {
     void usarHabilidadEspecial(Personaje objetivo){
 
     }
-    }
+}
+
 
 
 

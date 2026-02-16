@@ -83,12 +83,15 @@ public class Heroe extends Personaje{
     public void usarHabilidadEspecial(Personaje objetivo){
         if (this.tipo == TipoHeroe.GUERRERO){
             System.out.println("GOLPE PODEROSO");
+
         }
         if (this.tipo == TipoHeroe.MAGO){
             System.out.println("BOLA DE FUEGO");
+
         }
         if (this.tipo == TipoHeroe.ARQUERO){
             System.out.println("DISPARO PRECISO");
+
         }
     }
 

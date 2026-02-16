@@ -30,5 +30,11 @@ public class Item {
 
 
         }
+
+    }//aplica la curación al héroe
+    public void usar (Heroe heroe){
+        if (this.tipo==TipoItem.ELIXIR){
+            heroe.
+        }
     }
 }

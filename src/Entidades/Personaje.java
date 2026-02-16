@@ -10,13 +10,13 @@ public class Personaje {
     protected boolean vivo; //(true si puntosVidaActual > 0)
 
 
-    public Personaje(String nombre, int puntosVidaMax, int puntosVidaActual, int ataque, int defensa, boolean vivo) {
+    public Personaje(String nombre, int puntosVidaMax, int puntosVidaActual, int ataque, int defensa) {
         this.nombre = nombre;
         this.puntosVidaMax = puntosVidaActual;
         this.puntosVidaActual = puntosVidaActual;
         this.ataque = ataque;
         this.defensa = defensa;
-        this.vivo = vivo;
+        this.vivo = true;
     }
 
     public String getNombre() {

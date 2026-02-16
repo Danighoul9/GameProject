@@ -10,7 +10,7 @@ public class Heroe extends Personaje{
 
 
     public Heroe(String nombre, boolean vivo, TipoHeroe tipo, ArrayList<Item> item) {
-        super(nombre, 0, 0, 0, vivo);
+        super(nombre, 0, 0, 0);
         if (this.tipo == TipoHeroe.GUERRERO){
             this.puntosVidaActual = 100;
             this.ataque = 20;

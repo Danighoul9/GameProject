@@ -5,7 +5,7 @@ public class Enemigo extends Personaje {
     protected int expOtorgada; //(experiencia que da al morir)
 
     public Enemigo(String nombre, int puntosVidaMax, int puntosVidaActual, int ataque, int defensa, boolean vivo, int expOtorgada, TipoEnemigo tipo) {
-        super(nombre, puntosVidaMax, puntosVidaActual, ataque, defensa, vivo);
+        super(nombre, puntosVidaActual, ataque, defensa);
         this.expOtorgada = expOtorgada;
         this.tipo = tipo;
         switch (tipo) {
@@ -65,11 +65,15 @@ public class Enemigo extends Personaje {
         sb.append('}');
         return sb.toString();
     }
-//void usarHabilidadEspecial(Personaje objetivo) :
-    //GOBLIN: "Golpe Rápido" - ataca dos veces seguidas con daño
-    //reducido
-    //ORCO: "Grito de Guerra" - aumenta su ataque temporalmente
-    //DRAGON: "Aliento de Fuego" - daña a todos los héroes
+
+    /**
+     * void usarHabilidadEspecial(Personaje objetivo) :
+     * GOBLIN: "Golpe Rápido" - ataca dos veces seguidas con daño
+     * reducido
+     * ORCO: "Grito de Guerra" - aumenta su ataque temporalmente
+     * DRAGON: "Aliento de Fuego" - daña a todos los héroes
+     * @param objetivo
+     */
 
     public void usarHabilidadEspecial(Personaje objetivo){
     if (this.tipo==TipoEnemigo.GOBLIN) {
@@ -88,7 +92,7 @@ public class Enemigo extends Personaje {
 
     }
 
-    }
+}
 
 
 

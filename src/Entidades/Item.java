@@ -22,19 +22,17 @@ public class Item {
         switch (tipo){
             case POCION_PEQUENA:
                 this.ValorCuracion = 30;
-                break;
             case POCION_GRANDE:
                 this.ValorCuracion = 60;
             case ELIXIR:
                 this.ValorCuracion = 100;
-
-
         }
 
-    }//aplica la curación al héroe
+    }
+    //aplica la curación al héroe
     public void usar (Heroe heroe){
         if (this.tipo==TipoItem.ELIXIR){
-            heroe.
+
         }
     }
 }

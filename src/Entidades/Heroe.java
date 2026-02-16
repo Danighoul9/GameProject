@@ -69,7 +69,20 @@ if (this.tipo == TipoHeroe.GUERRERO){
             System.out.println("GOLPE PODEROSO");
         }
         if (this.tipo == TipoHeroe.MAGO){
-
+            System.out.println("BOLA DE FUEGO");
+        }
+        if (this.tipo == TipoHeroe.ARQUERO){
+            System.out.println("DISPARO PRECISO");
         }
     }
+
+    /**
+     * Subir experiencia y nivel al heroe
+     * @param exp
+     */
+    public void ganarExperiencia(int exp){
+        this.experiencia += exp;
+    }
+
+
 }

@@ -3,16 +3,16 @@ package Entidades;
 public class Personaje {
 
     protected String nombre;
-    protected int puntosVidaMax;
     protected int puntosVidaActual;
+    protected int puntosVidaMax;
     protected int ataque;
     protected int defensa;
     protected boolean vivo; //(true si puntosVidaActual > 0)
 
 
-    public Personaje(String nombre, int puntosVidaMax, int puntosVidaActual, int ataque, int defensa, boolean vivo) {
+    public Personaje(String nombre,int puntosVidaActual, int ataque, int defensa, boolean vivo) {
         this.nombre = nombre;
-        this.puntosVidaMax = puntosVidaMax;
+        puntosVidaMax = puntosVidaActual;
         this.puntosVidaActual = puntosVidaActual;
         this.ataque = ataque;
         this.defensa = defensa;
@@ -29,10 +29,6 @@ public class Personaje {
 
     public int getPuntosVidaMax() {
         return puntosVidaMax;
-    }
-
-    public void setPuntosVidaMax(int puntosVidaMax) {
-        this.puntosVidaMax = puntosVidaMax;
     }
 
     public int getPuntosVidaActual() {
@@ -59,14 +55,58 @@ public class Personaje {
         this.defensa = defensa;
     }
 
-    public boolean isVivo() {
-        return vivo;
-    }
-
     public void setVivo(boolean vivo) {
         this.vivo = vivo;
     }
 
+    /**
+     * calcula daño y lo aplica al objetivo
+     * Daño = ataque del atacante - defensa del objetivo (mínimo 1 de daño)
+     */
+    public void atacar(Personaje objetivo){
+        int golpe = this.ataque - objetivo.getDefensa();
+        //Si el daño es mayor a 1 intercepta si no pues no hace nada este metodo
+        if (golpe > 1){
+            recibirDanio(golpe);
+        }
+
+    }
+
+    /**
+     * resta vida, si llega a 0 o menos, marca vivo = false
+     */
+    public void recibirDanio(int danio){
+        this.puntosVidaActual -= danio;
+
+        if (this.puntosVidaActual <= 0){
+            this.vivo = false;
+        }
+    }
+
+    /**
+     * suma vida sin pasar del máximo
+     */
+    public void curar(int cantidad){
+        //Para que no nos paseos de la vida actual haremos un if el cual nos hara un capeo de la vida.
+        if (this.puntosVidaActual + cantidad > this.puntosVidaMax){
+            this.puntosVidaActual = this.puntosVidaMax;
+        }else {
+            this.puntosVidaActual += cantidad;
+        }
+
+    }
+
+    /**
+     * devuelve si vivo == true
+     */
+    public boolean estaVivo(){
+        this.vivo = false;
+
+        if(this.puntosVidaActual > 0){
+            this.vivo = true;
+        }
+        return this.vivo;
+    }
 
 
 

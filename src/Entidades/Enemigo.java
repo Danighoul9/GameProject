@@ -1,34 +1,36 @@
 package Entidades;
 
+import java.util.ArrayList;
+
 public class Enemigo extends Personaje {
     protected TipoEnemigo tipo;
     protected int expOtorgada; //(experiencia que da al morir)
+    private ArrayList<Heroe> heroes;
 
-    public Enemigo(String nombre, int puntosVidaMax, int puntosVidaActual, int ataque, int defensa, boolean vivo, int expOtorgada, TipoEnemigo tipo) {
-        super(nombre, puntosVidaActual, ataque, defensa);
-        this.expOtorgada = expOtorgada;
+    public Enemigo(String nombre,TipoEnemigo tipo) {
+        super(nombre, 0, 0, 0);
         this.tipo = tipo;
         switch (tipo) {
-            case GOBLIN:
+            case GOBLIN ->{
                 this.puntosVidaActual = 30;
                 this.ataque = 8;
                 this.defensa = 3;
                 this.expOtorgada = 20;
-                break;
+            }
 
-            case ORCO:
+            case ORCO ->{
                 this.puntosVidaActual = 60;
                 this.ataque = 15;
                 this.defensa = 8;
                 this.expOtorgada = 40;
-                break;
+            }
 
-            case DRAGON:
+            case DRAGON ->{
                 this.puntosVidaActual = 150;
                 this.ataque = 25;
                 this.defensa = 12;
                 this.expOtorgada = 100;
-                break;
+            }
         }
 
     }
@@ -76,18 +78,22 @@ public class Enemigo extends Personaje {
      */
 
     public void usarHabilidadEspecial(Personaje objetivo){
-    if (this.tipo==TipoEnemigo.GOBLIN) {
-        System.out.println("Golpe Rapido");
-        atacar(objetivo);
-        atacar(objetivo);
-    }
+        if (this.tipo==TipoEnemigo.GOBLIN) {
+            System.out.println("Golpe Rapido");
+            atacar(objetivo);
+            atacar(objetivo);
+        }
         if (this.tipo==TipoEnemigo.ORCO){
             System.out.println("Grito guerra");
             this.ataque *= 1.2;
-
         }
         if (this.tipo==TipoEnemigo.DRAGON){
             System.out.println("Aliento de Fuego");
+            //Hemos añadido un arrayilist de heroes para que ataque a
+            // todos los heroes restantes
+            for(Heroe e : heroes){
+                atacar(e);
+            }
         }
 
     }

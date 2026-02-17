@@ -5,9 +5,54 @@ public class Item {
     public TipoItem tipo;
     public int ValorCuracion;
 
+
+    public Item( TipoItem tipo, int valorCuracion) {
+
+        this.tipo = tipo;
+        ValorCuracion = valorCuracion;
+        switch (tipo) {
+            case POCION_PEQUENA:
+                this.ValorCuracion = 30;
+                break;
+            case POCION_GRANDE:
+                this.ValorCuracion = 60;
+                break;
+            case ELIXIR:
+                this.ValorCuracion = Integer.MAX_VALUE;
+                break;
+        }
+
+    }
+
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public TipoItem getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoItem tipo) {
+        this.tipo = tipo;
+    }
+
+    public int getValorCuracion() {
+        return ValorCuracion;
+    }
+
+    public void setValorCuracion(int valorCuracion) {
+        ValorCuracion = valorCuracion;
+    }
+
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Item{");
+        final StringBuffer sb = new StringBuffer("Item{");
         sb.append("nombre='").append(nombre).append('\'');
         sb.append(", tipo=").append(tipo);
         sb.append(", ValorCuracion=").append(ValorCuracion);
@@ -15,24 +60,13 @@ public class Item {
         return sb.toString();
     }
 
-    public Item(String nombre, TipoItem tipo, int valorCuracion) {
-        this.nombre = nombre;
-        this.tipo = tipo;
-        ValorCuracion = valorCuracion;
-        switch (tipo){
-            case POCION_PEQUENA:
-                this.ValorCuracion = 30;
-            case POCION_GRANDE:
-                this.ValorCuracion = 60;
-            case ELIXIR:
-                this.ValorCuracion = 100;
-        }
-
-    }
     //aplica la curación al héroe
-    public void usar (Heroe heroe){
-        if (this.tipo==TipoItem.ELIXIR){
-
+    public void usar(Heroe heroe) {
+        if (this.tipo == TipoItem.ELIXIR) {
+            heroe.curar(Integer.MAX_VALUE);
+        } else {
+            heroe.curar(ValorCuracion);
         }
     }
+
 }

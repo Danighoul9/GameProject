@@ -6,11 +6,13 @@ public class Heroe extends Personaje{
     private TipoHeroe tipo;
     int nivel = 1;
     int experiencia = 0;
-    ArrayList<Item> item;
+    private ArrayList<Item> item;
+    private ArrayList<Enemigo> enemigos;
 
 
-    public Heroe(String nombre, boolean vivo, TipoHeroe tipo, ArrayList<Item> item) {
+    public Heroe(String nombre, TipoHeroe tipo) {
         super(nombre, 0, 0, 0);
+        this.tipo = tipo;
         if (this.tipo == TipoHeroe.GUERRERO){
             this.puntosVidaActual = 100;
             this.ataque = 20;
@@ -88,7 +90,11 @@ public class Heroe extends Personaje{
         }
         if (this.tipo == TipoHeroe.MAGO){
             System.out.println("BOLA DE FUEGO");
-
+            //Hemos añadido un arrayilist de enemigos para que ataque a
+            // todos los enemigos restantes
+            for(Enemigo e : enemigos){
+                atacar(e);
+            }
         }
         if (this.tipo == TipoHeroe.ARQUERO){
             System.out.println("DISPARO PRECISO");
@@ -116,10 +122,12 @@ public class Heroe extends Personaje{
         }
     }
 
+    /**
+     * usa una poción del inventario
+     * @param item
+     */
     public void usarItem(Item item){
-
+        this.puntosVidaActual += (item.ValorCuracion);
     }
-
-
 
 }

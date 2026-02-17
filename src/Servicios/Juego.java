@@ -60,7 +60,7 @@ public class Juego {
      */
     public void inicializarJuego() {
 
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 4; i++) {
             Sala sala = new Sala(i);
             sala.generarEnemigos();
             this.salas.add(sala);//asi creamos 5 salas
@@ -102,11 +102,14 @@ public class Juego {
      * Bucle principal del juego
      */
     public void jugar() {
+        Combate c = new Combate(0);
         while (!juegoTerminado) {
-            if (salaActual != 1) {
+            if (salaActual != 0) {
                 menuEntreSalas();
             }
 
+            c.iniciarCombate();
+            verificarEstadoJuego();
             salaActual++;
 
         }
@@ -116,30 +119,87 @@ public class Juego {
      * Mostrar opciones: Ver equipo / Usar pociones / Descansar / Continuar
      */
     public void menuEntreSalas() {
-        int respuesta = -1;
-        IO.println("¿Que deseas hacer?");
+        int respuesta = 0;
+
+        do {
+            IO.println("----* MENU ENTRE SALAS *----");
             IO.println("1. Ver equipo");
-            IO.println("2. Usar pociones");
+            IO.println("2. Usar poción");
             IO.println("3. Descansar");
             IO.println("4. Continuar");
-        respuesta = Integer.parseInt(IO.readln());
 
-        switch (respuesta) {
-            case 1 -> {
-                IO.println("---- EQUIPO ----");
-                for (Heroe h : equipo) {
-                    IO.println(h);
+            respuesta = Integer.parseInt(IO.readln());
+
+            switch (respuesta) {
+                case 1 -> {
+                    IO.println("--- EQUIPO ---");
+                    for (Heroe h : equipo) {
+                        IO.println(h);
+                    }
                 }
+
+                case 2 -> {
+                    //Pedimos al usuario que elija un heroes
+                    IO.println("Elige un héroe:");
+
+                    //Mostramos los heroes en el equipo
+                    for (int i = 0; i < equipo.size(); i++) {
+                        IO.println((i + 1) + ". " + equipo.get(i).getNombre());
+                    }
+                    int idHeroe = Integer.parseInt(IO.readln()) - 1;
+
+                    //Si el numero otorgado por el usuario no es valido lo notificamos y metemos un break
+                    if (idHeroe < 0 || idHeroe >= equipo.size()) {
+                        IO.println("Héroe no válido");
+                        break;
+                    }
+
+                    //Escogemos al heroe
+                    Heroe h = equipo.get(idHeroe);
+                    //Si el heroe ha agotado todas sus pociones entonces notificamos que no tiene
+                    if (h.getItem().isEmpty()) {
+                        IO.println("Este héroe no tiene pociones");
+                        break;
+                    }
+
+                    //Si el heroe tiene pociones disponibles le mostramos cuales tiene 
+                    // y el usuario deberia de elegir cual pocion usar
+                    IO.println("Elige una poción:");
+                    for (int i = 0; i < h.getItem().size(); i++) {
+                        IO.println((i + 1) + ". " + h.getItem().get(i));
+                    }
+                    int idItem = Integer.parseInt(IO.readln()) - 1;
+
+                    //Si el numero otorgado por el usuario no es valido lo notificamos y metemos un break
+                    if (idItem < 0 || idItem >= h.getItem().size()) {
+                        IO.println("Poción no válida");
+                        break;
+                    }
+
+                    //Cogemos el item, lo usamos y lo borramos del inventario del heroe
+                    Item item = h.getItem().get(idItem);
+                    item.usar(h);
+                    h.getItem().remove(idItem);
+
+                    IO.println("Poción usada correctamente");
+                }
+
+
+                case 3 -> {
+                    IO.println("El equipo descansa (+20 HP)");
+                    for (Heroe h : equipo) {
+                        if (h.estaVivo()) {
+                            h.curar(20);
+                        }
+                    }
+                }
+
+                case 4 -> IO.println("Continuando a la siguiente sala...");
+
+                default -> IO.println("Opción no válida");
             }
 
-            case 2 ->
-
-            case 3 ->
-
-            case 4 ->
-
-            default -> IO.println("Opción no válida");
-        }
+        } while (respuesta != 4);
     }
 
 
@@ -167,7 +227,7 @@ public class Juego {
     }
 
     public void mostrarResultadoFInal() {
-        if (salaActual > 5) {
+        if (salaActual > 4) {
             IO.println("¡¡VICTORIA!!");
             IO.println("Has superado las 5 salas de la mazmorra");
             IO.println("--------------------------------");
@@ -177,7 +237,7 @@ public class Juego {
                 IO.println("- " + h.getNombre() + " (" + h.getTipo() + " (" + h.getPuntosVidaActual()
                         + " (" + h.getPuntosVidaMax());
             }
-        } else if(salaActual < 5 && equipo.isEmpty()) {
+        } else if(salaActual < 4 && equipo.isEmpty()) {
             IO.println("GAME OVER");
             IO.println("El equipo ha caído en la Sala " + (salaActual + 1));
         }

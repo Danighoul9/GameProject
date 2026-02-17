@@ -13,10 +13,10 @@ public class Combate {
     private ArrayList<Heroe> heroes;
 
     //Constructor
-    public Combate(Sala sala, ArrayList<Heroe> heroes) {
+    public Combate(Sala sala) {
         this.turno = 1;
         this.sala = sala;
-        this.heroes = heroes;
+        this.heroes = new ArrayList<>();
     }
 
     //Getter y setter

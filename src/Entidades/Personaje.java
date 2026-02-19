@@ -1,7 +1,5 @@
 package Entidades;
 
-import java.util.ArrayList;
-
 public abstract class Personaje {
 
     protected String nombre;
@@ -66,12 +64,6 @@ public abstract class Personaje {
      * Daño = ataque del atacante - defensa del objetivo (mínimo 1 de daño)
      */
     public void atacar(Personaje objetivo){
-        /**int golpe = this.ataque - objetivo.getDefensa();
-        //Si el daño es mayor a 1 intercepta si no pues no hace nada este metodo
-        if (golpe > 1){
-                objetivo.recibirDanio(golpe);
-        }
-         */
         // Calculamos el golpe, pero nos aseguramos de que al menos sea 1 de daño
         int golpe = Math.max(1, this.ataque - objetivo.getDefensa());
         objetivo.recibirDanio(golpe);
@@ -108,11 +100,5 @@ public abstract class Personaje {
     public boolean estaVivo(){
         return this.puntosVidaActual > 0;
     }
-
-    /**
-     * Método abstracto para habilidades especiales
-     * Cada subclase debe implementar su propia habilidad especial
-     */
-    public abstract void usarHabilidadEspecial(Personaje objetivo, ArrayList<? extends Personaje> listaObjetivos);
 
 }

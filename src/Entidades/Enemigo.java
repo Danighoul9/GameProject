@@ -13,7 +13,7 @@ public class Enemigo extends Personaje {
         switch (tipo) {
             case GOBLIN ->{
                 this.puntosVidaActual = 30;
-                this.ataque = 8;
+                this.ataque = 18;
                 this.defensa = 3;
                 this.expOtorgada = 20;
                 this.puntosVidaMax = this.puntosVidaActual;
@@ -21,7 +21,7 @@ public class Enemigo extends Personaje {
 
             case ORCO ->{
                 this.puntosVidaActual = 60;
-                this.ataque = 15;
+                this.ataque = 28;
                 this.defensa = 8;
                 this.expOtorgada = 40;
                 this.puntosVidaMax = this.puntosVidaActual;
@@ -29,7 +29,7 @@ public class Enemigo extends Personaje {
 
             case DRAGON ->{
                 this.puntosVidaActual = 150;
-                this.ataque = 25;
+                this.ataque = 36;
                 this.defensa = 12;
                 this.expOtorgada = 100;
                 this.puntosVidaMax = this.puntosVidaActual;
@@ -78,12 +78,9 @@ public class Enemigo extends Personaje {
      * ORCO: "Grito de Guerra" - aumenta su ataque temporalmente
      * DRAGON: "Aliento de Fuego" - daña a todos los héroes
      * @param objetivo
-     * @param listaObjetivos
+     * @param listaHeroes
      */
-    @Override
-    public void usarHabilidadEspecial(Personaje objetivo, ArrayList<? extends Personaje> listaObjetivos){
-        @SuppressWarnings("unchecked")
-        ArrayList<Heroe> listaHeroes = (ArrayList<Heroe>) listaObjetivos;
+    public void usarHabilidadEspecial(Personaje objetivo, ArrayList<Heroe> listaHeroes){
 
         if (this.tipo==TipoEnemigo.GOBLIN) {
             System.out.println("Golpe Rapido");

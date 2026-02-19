@@ -29,6 +29,18 @@ public class Heroe extends Personaje{
             this.defensa = 10;
             this.puntosVidaMax=this.puntosVidaActual;
 
+        } else if (this.tipo == TipoHeroe.CLERIGO) {
+            this.puntosVidaActual = 20;
+            this.ataque = 3;
+            this.defensa = 15;
+            this.puntosVidaMax=this.puntosVidaActual;
+
+        } else if (this.tipo == TipoHeroe.JACKPOT) {
+            this.puntosVidaActual = 40;
+            this.ataque = 5;
+            this.defensa = 15;
+            this.puntosVidaMax=this.puntosVidaActual;
+
         }
         this.item = new ArrayList<>();
     }
@@ -85,12 +97,9 @@ public class Heroe extends Personaje{
     /**
      * Habilidades Especiales de los heroes
      * @param objetivo
-     * @param listaObjetivos
+     * @param listaEnemigos
      */
-    @Override
-    public void usarHabilidadEspecial(Personaje objetivo, ArrayList<? extends Personaje> listaObjetivos){
-        @SuppressWarnings("unchecked")
-        ArrayList<Enemigo> listaEnemigos = (ArrayList<Enemigo>) listaObjetivos;
+    public void usarHabilidadEspecial(Personaje objetivo, ArrayList<Enemigo> listaEnemigos){
 
         if (this.tipo == TipoHeroe.GUERRERO){
             System.out.println(nombre + " usa GOLPE PODEROSO!");
@@ -107,6 +116,18 @@ public class Heroe extends Personaje{
             System.out.println(nombre + " usa DISPARO PRECISO!");
             objetivo.recibirDanio(this.ataque * 2);
         }
+        if (this.tipo == TipoHeroe.CLERIGO){
+            System.out.println(nombre + " uso CURACIÓN!");
+            objetivo.curar(this.ataque * 10);
+        }
+        if (this.tipo == TipoHeroe.JACKPOT){
+            int numeroAleatorio = (int)(Math.random() * 20);
+            if(numeroAleatorio == 7 || numeroAleatorio == 20 ||
+               numeroAleatorio == 5 || numeroAleatorio == 10){
+            objetivo.recibirDanio(this.ataque * 5);
+            }
+        }
+
     }
 
     /**

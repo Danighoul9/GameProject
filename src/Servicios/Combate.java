@@ -56,40 +56,32 @@ public class Combate {
     }
 
     public void turnoHeroes() {
+        int usosHabEspecial = 1;
         for (Heroe h : heroes) {
             if (!h.estaVivo() || sala.getEnemigosVivos().isEmpty()){
                 continue;
             }
-            h.usarHabilidadEspecial(sala.getEnemigosVivos().get(0), sala.getEnemigos());
+            if (usosHabEspecial != 0){
+                h.usarHabilidadEspecial(sala.getEnemigosVivos().get(0), sala.getEnemigos());
+                usosHabEspecial--;
+            } else {
+                h.atacar(sala.getEnemigosVivos().get(0));
+            }
         }
     }
 
-
-
-
     /**
      * Cada enemigo vivo ataca a un héroe aleatorio
-     * <p>
      * El funcionamiento de este metodo es el siguiente --->
-     * <p>
      * -Generamos un numero random de heroe para luego en el arraylist coger una posicion random
      * y por ende seleccionar a un heroe random para que el enemigo lo ataque
      * -Despues de generar el numero random en base al .size() del arraylist de heroes,
      * el enemigo ataca a este haciendo un heroes.get() en la posicion RANDOM.
      */
 
-    /*
-    try{
-        respuesta = sc.nextINt();
-    }catch(Exception e){
-        sout(Introduce un dato valido)
-        respuesta = -1;
-    }
-    */
-
     public void turnoEnemigos() {
         ArrayList<Heroe> objetivosValidos = getHeroesVivos();
-
+        int usosHabEspecial = 5;
         for (Enemigo e : sala.getEnemigosVivos()) {
             if (objetivosValidos.isEmpty()){
                 break;
@@ -100,7 +92,14 @@ public class Combate {
             Heroe objetivo = objetivosValidos.get(indice);
 
             // Pasamos el objetivo Y la lista de héroes (por si el Dragón usa área)
-            e.usarHabilidadEspecial(objetivo, this.heroes);
+            if (usosHabEspecial != 0){
+                e.usarHabilidadEspecial(objetivo, this.heroes);
+                usosHabEspecial--;
+            } else{
+                e.atacar(objetivo);
+            }
+
+
         }
     }
 

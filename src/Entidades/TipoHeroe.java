@@ -3,5 +3,7 @@ package Entidades;
 public enum TipoHeroe {
     GUERRERO,
     MAGO,
-    ARQUERO
+    ARQUERO,
+    CLERIGO,
+    JACKPOT
 }

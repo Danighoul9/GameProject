@@ -14,9 +14,13 @@ public class Juego {
     private ArrayList<Sala> salas;  //(las 5 salas de la mazmorra)
     private int salaActual; //(0-4)
     private boolean juegoTerminado;
+    private Estadisticas estadisticas;
 
     public Juego(int salaActual) {
-        this.salaActual = salaActual;
+        // Ajustar para que salaActual sea un índice válido (0-4)
+        // Si se pasa 1, lo convertimos a 0 para empezar desde la primera sala
+        this.salaActual = salaActual - 1;
+        if (this.salaActual < 0) this.salaActual = 0;
         this.equipo = new ArrayList<>();
         this.salas = new ArrayList<>();
         this.juegoTerminado = false;
@@ -59,8 +63,9 @@ public class Juego {
      * Darles algunas pociones iniciales
      */
     public void inicializarJuego() {
+        estadisticas = new Estadisticas();
 
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i <= 5; i++) {
             Sala sala = new Sala(i);
             sala.generarEnemigos();
             this.salas.add(sala);//asi creamos 5 salas
@@ -72,8 +77,24 @@ public class Juego {
             System.out.println("Elige a un heroe" + i + ":");
             System.out.println("1-Arquero 2-Guerrero 3-Mago");
 
-            int opcion = sc.nextInt();
-            sc.nextLine();
+            int opcion = 0;
+            boolean valido = false;
+            while(!valido) {
+                try {
+                    opcion = sc.nextInt();
+                    sc.nextLine();
+                    if(opcion >= 1 && opcion <= 3) {
+                        valido = true;
+                    } else {
+                        System.out.println("Opción no válida. Intenta de nuevo.");
+                    }
+                } catch (Exception e) {
+                    System.out.println("Debes ingresar un número.");
+                    sc.nextLine();
+                }
+            }
+
+
 
             System.out.println("Elige un nombre para tu heroe");
             String nombre = sc.nextLine();
@@ -102,17 +123,42 @@ public class Juego {
      * Bucle principal del juego
      */
     public void jugar() {
-        Combate c = new Combate(0);
-        while (!juegoTerminado) {
+        // Mientras no hayamos terminado y estemos dentro del rango de salas (0 a 4)
+        while (!this.juegoTerminado && salaActual < salas.size()) {
+
+            // 1. Antes de entrar, si no es la primera sala, dejamos descansar/curar
             if (salaActual != 0) {
                 menuEntreSalas();
             }
 
+            // 2. CREAMOS EL COMBATE CON LA SALA QUE TOCA
+            Combate c = new Combate(salas.get(salaActual), this.equipo);
+
+            System.out.println("--- ENTRANDO A LA SALA " + (salaActual + 1) + " ---");
             c.iniciarCombate();
+
+            // 3. Revisamos si hemos muerto todos
             verificarEstadoJuego();
+
+            // Si hemos perdido, salimos del bucle
+            if (juegoTerminado) break;
+
+            // 4. Si todos los enemigos están muertos, marcamos la sala como completada
+            if (salas.get(salaActual).todosEnemigosMuertos()) {
+                salas.get(salaActual).setCompletada(true);
+            }
+
+            // 5. Pasamos a la siguiente sala
             salaActual++;
 
+            // Si hemos pasado la última sala, ganamos
+            if (salaActual >= salas.size()) {
+                juegoTerminado = true;
+            }
         }
+
+        // Al salir del bucle, mostramos cómo ha quedado la cosa
+        mostrarResultadoFInal();
     }
 
     /**
@@ -128,14 +174,42 @@ public class Juego {
             IO.println("3. Descansar");
             IO.println("4. Continuar");
 
-            respuesta = Integer.parseInt(IO.readln());
+            try {
+                respuesta = Integer.parseInt(IO.readln());
+            } catch (NumberFormatException e) {
+                IO.println("Debes ingresar un número válido.");
+                continue;
+            }
+
 
             switch (respuesta) {
                 case 1 -> {
-                    IO.println("--- EQUIPO ---");
+                    /**
+                     * Con un poco de ayuda de la IA hemos podido recrear algo mas
+                     * grafico en cuanto a ver la info basica del equipo se refiere
+                     *
+                     * - Hemos preguntado como podriamos tener una barrita de vida visual.
+                     * - Y que formato usar para que se viera en la forma que deseabamos.
+                     */
+                    IO.println("\n============================================================");
+                    IO.println(String.format("| %-12s | %-15s | %-10s | %-8s |", "NOMBRE", "SALUD", "HP", "POCIONES"));
+                    IO.println("============================================================");
+
                     for (Heroe h : equipo) {
-                        IO.println(h);
+                        // Creamos una barrita visual de vida: [#####     ]
+                        int barras = (int) ((double) h.getPuntosVidaActual() / h.getPuntosVidaMax() * 10);
+                        String visualVida = "[" + "#".repeat(Math.max(0, barras)) + " ".repeat(Math.max(0, 10 - barras)) + "]";
+
+                        // Mostramos la info formateada en columnas
+                        IO.println(String.format("| %-12s | %-15s | %-3d/%-6d | %-8d |",
+                                h.getNombre(),
+                                visualVida,
+                                h.getPuntosVidaActual(),
+                                h.getPuntosVidaMax(),
+                                h.getItem().size()
+                        ));
                     }
+                    IO.println("============================================================\n");
                 }
 
                 case 2 -> {
@@ -146,7 +220,14 @@ public class Juego {
                     for (int i = 0; i < equipo.size(); i++) {
                         IO.println((i + 1) + ". " + equipo.get(i).getNombre());
                     }
-                    int idHeroe = Integer.parseInt(IO.readln()) - 1;
+                    
+                    int idHeroe = -1;
+                    try {
+                        idHeroe = Integer.parseInt(IO.readln()) - 1;
+                    } catch (NumberFormatException e) {
+                        IO.println("Debes ingresar un número válido.");
+                        break;
+                    }
 
                     //Si el numero otorgado por el usuario no es valido lo notificamos y metemos un break
                     if (idHeroe < 0 || idHeroe >= equipo.size()) {
@@ -168,7 +249,14 @@ public class Juego {
                     for (int i = 0; i < h.getItem().size(); i++) {
                         IO.println((i + 1) + ". " + h.getItem().get(i));
                     }
-                    int idItem = Integer.parseInt(IO.readln()) - 1;
+                    
+                    int idItem = -1;
+                    try {
+                        idItem = Integer.parseInt(IO.readln()) - 1;
+                    } catch (NumberFormatException e) {
+                        IO.println("Debes ingresar un número válido.");
+                        break;
+                    }
 
                     //Si el numero otorgado por el usuario no es valido lo notificamos y metemos un break
                     if (idItem < 0 || idItem >= h.getItem().size()) {
@@ -216,28 +304,37 @@ public class Juego {
 
         //Si no hay heroes vivos -> GAME OVER
         if (!hayHeroesVivos) {
+            IO.println("EL EQUIPO HA SIDO DERROTADO...");
             IO.println("GAME OVER");
-            return;
-        }
-
-        //Si completo la sala 5 -> Victoria
-        if (salaActual == 5 && salas.get(salaActual).todosEnemigosMuertos()) {
-            juegoTerminado = true;
+            this.juegoTerminado = true;
         }
     }
 
     public void mostrarResultadoFInal() {
-        if (salaActual > 4) {
+        // Verificar si hay héroes vivos
+        boolean hayHeroesVivos = false;
+        for (Heroe h : equipo) {
+            if (h.estaVivo()) {
+                hayHeroesVivos = true;
+                break;
+            }
+        }
+        
+        // Si completamos todas las salas Y hay héroes vivos -> VICTORIA
+        if (salaActual >= salas.size() && hayHeroesVivos) {
             IO.println("¡¡VICTORIA!!");
             IO.println("Has superado las 5 salas de la mazmorra");
             IO.println("--------------------------------");
 
-            IO.println("Heroes que sobrevivieron");
+            IO.println("Heroes que sobrevivieron:");
             for (Heroe h : equipo) {
-                IO.println("- " + h.getNombre() + " (" + h.getTipo() + " (" + h.getPuntosVidaActual()
-                        + " (" + h.getPuntosVidaMax());
+                if (h.estaVivo()) {
+                    IO.println("- " + h.getNombre() + " (" + h.getTipo() + ") - HP: " + h.getPuntosVidaActual()
+                            + "/" + h.getPuntosVidaMax());
+                }
             }
-        } else if(salaActual < 4 && equipo.isEmpty()) {
+        } else {
+            // Si no hay héroes vivos -> DERROTA
             IO.println("GAME OVER");
             IO.println("El equipo ha caído en la Sala " + (salaActual + 1));
         }

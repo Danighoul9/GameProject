@@ -1,6 +1,8 @@
 package Entidades;
 
-public class Personaje {
+import java.util.ArrayList;
+
+public abstract class Personaje {
 
     protected String nombre;
     protected int puntosVidaActual;
@@ -10,9 +12,9 @@ public class Personaje {
     protected boolean vivo; //(true si puntosVidaActual > 0)
 
 
-    public Personaje(String nombre, int puntosVidaActual, int ataque, int defensa) {
+    public Personaje(String nombre, int puntosVidaActual, int ataque, int defensa, int puntosVidaMax) {
         this.nombre = nombre;
-        this.puntosVidaMax = puntosVidaActual;
+        this.puntosVidaMax = puntosVidaMax;
         this.puntosVidaActual = puntosVidaActual;
         this.ataque = ataque;
         this.defensa = defensa;
@@ -64,11 +66,15 @@ public class Personaje {
      * Daño = ataque del atacante - defensa del objetivo (mínimo 1 de daño)
      */
     public void atacar(Personaje objetivo){
-        int golpe = this.ataque - objetivo.getDefensa();
+        /**int golpe = this.ataque - objetivo.getDefensa();
         //Si el daño es mayor a 1 intercepta si no pues no hace nada este metodo
         if (golpe > 1){
-            recibirDanio(golpe);
+                objetivo.recibirDanio(golpe);
         }
+         */
+        // Calculamos el golpe, pero nos aseguramos de que al menos sea 1 de daño
+        int golpe = Math.max(1, this.ataque - objetivo.getDefensa());
+        objetivo.recibirDanio(golpe);
 
     }
 
@@ -100,16 +106,13 @@ public class Personaje {
      * devuelve si vivo == true
      */
     public boolean estaVivo(){
-        this.vivo = false;
-
-        if(this.puntosVidaActual > 0){
-            this.vivo = true;
-        }
-        return this.vivo;
+        return this.puntosVidaActual > 0;
     }
 
-
-
-
+    /**
+     * Método abstracto para habilidades especiales
+     * Cada subclase debe implementar su propia habilidad especial
+     */
+    public abstract void usarHabilidadEspecial(Personaje objetivo, ArrayList<? extends Personaje> listaObjetivos);
 
 }

@@ -7,24 +7,28 @@ public class Heroe extends Personaje{
     int nivel = 1;
     int experiencia = 0;
     private ArrayList<Item> item;
-    private ArrayList<Enemigo> enemigos;
+    private ArrayList<Enemigo> enemigos = new ArrayList<>();
 
 
     public Heroe(String nombre, TipoHeroe tipo) {
-        super(nombre, 0, 0, 0);
+        super(nombre, 0, 0, 0, 0 );
         this.tipo = tipo;
         if (this.tipo == TipoHeroe.GUERRERO){
             this.puntosVidaActual = 100;
             this.ataque = 20;
             this.defensa = 15;
+            this.puntosVidaMax = this.puntosVidaActual;
         } else if (this.tipo == TipoHeroe.ARQUERO) {
             this.puntosVidaActual = 60;
             this.ataque = 30;
             this.defensa = 5;
+            this.puntosVidaMax = this.puntosVidaActual;
         } else if (this.tipo == TipoHeroe.MAGO) {
             this.puntosVidaActual = 80;
             this.ataque = 25;
             this.defensa = 10;
+            this.puntosVidaMax=this.puntosVidaActual;
+
         }
         this.item = new ArrayList<>();
     }
@@ -81,24 +85,27 @@ public class Heroe extends Personaje{
     /**
      * Habilidades Especiales de los heroes
      * @param objetivo
+     * @param listaObjetivos
      */
-    public void usarHabilidadEspecial(Personaje objetivo){
+    @Override
+    public void usarHabilidadEspecial(Personaje objetivo, ArrayList<? extends Personaje> listaObjetivos){
+        @SuppressWarnings("unchecked")
+        ArrayList<Enemigo> listaEnemigos = (ArrayList<Enemigo>) listaObjetivos;
+
         if (this.tipo == TipoHeroe.GUERRERO){
-            System.out.println("GOLPE PODEROSO");
+            System.out.println(nombre + " usa GOLPE PODEROSO!");
             atacar(objetivo);
             atacar(objetivo);
         }
-        if (this.tipo == TipoHeroe.MAGO){
-            System.out.println("BOLA DE FUEGO");
-            //Hemos añadido un arrayilist de enemigos para que ataque a
-            // todos los enemigos restantes
-            for(Enemigo e : enemigos){
-                atacar(e);
+        if (this.tipo == TipoHeroe.MAGO) {
+            System.out.println(nombre + " lanza BOLA DE FUEGO a todos!");
+            for (Enemigo e : listaEnemigos) {
+                if (e.estaVivo()) atacar(e);
             }
         }
         if (this.tipo == TipoHeroe.ARQUERO){
-            System.out.println("DISPARO PRECISO");
-            recibirDanio(this.ataque);
+            System.out.println(nombre + " usa DISPARO PRECISO!");
+            objetivo.recibirDanio(this.ataque * 2);
         }
     }
 
@@ -127,7 +134,8 @@ public class Heroe extends Personaje{
      * @param item
      */
     public void usarItem(Item item){
-        this.puntosVidaActual += (item.ValorCuracion);
+        // Usar el método curar que respeta el límite máximo de vida
+        this.curar(item.ValorCuracion);
     }
 
 }

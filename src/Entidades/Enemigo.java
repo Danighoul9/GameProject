@@ -5,10 +5,10 @@ import java.util.ArrayList;
 public class Enemigo extends Personaje {
     protected TipoEnemigo tipo;
     protected int expOtorgada; //(experiencia que da al morir)
-    private ArrayList<Heroe> heroes;
+    private ArrayList<Heroe> heroes = new ArrayList<>();
 
     public Enemigo(String nombre,TipoEnemigo tipo) {
-        super(nombre, 0, 0, 0);
+        super(nombre, 0, 0, 0, 0);
         this.tipo = tipo;
         switch (tipo) {
             case GOBLIN ->{
@@ -16,6 +16,7 @@ public class Enemigo extends Personaje {
                 this.ataque = 8;
                 this.defensa = 3;
                 this.expOtorgada = 20;
+                this.puntosVidaMax = this.puntosVidaActual;
             }
 
             case ORCO ->{
@@ -23,6 +24,7 @@ public class Enemigo extends Personaje {
                 this.ataque = 15;
                 this.defensa = 8;
                 this.expOtorgada = 40;
+                this.puntosVidaMax = this.puntosVidaActual;
             }
 
             case DRAGON ->{
@@ -30,6 +32,7 @@ public class Enemigo extends Personaje {
                 this.ataque = 25;
                 this.defensa = 12;
                 this.expOtorgada = 100;
+                this.puntosVidaMax = this.puntosVidaActual;
             }
         }
 
@@ -75,9 +78,13 @@ public class Enemigo extends Personaje {
      * ORCO: "Grito de Guerra" - aumenta su ataque temporalmente
      * DRAGON: "Aliento de Fuego" - daña a todos los héroes
      * @param objetivo
+     * @param listaObjetivos
      */
+    @Override
+    public void usarHabilidadEspecial(Personaje objetivo, ArrayList<? extends Personaje> listaObjetivos){
+        @SuppressWarnings("unchecked")
+        ArrayList<Heroe> listaHeroes = (ArrayList<Heroe>) listaObjetivos;
 
-    public void usarHabilidadEspecial(Personaje objetivo){
         if (this.tipo==TipoEnemigo.GOBLIN) {
             System.out.println("Golpe Rapido");
             atacar(objetivo);
@@ -85,16 +92,16 @@ public class Enemigo extends Personaje {
         }
         if (this.tipo==TipoEnemigo.ORCO){
             System.out.println("Grito guerra");
-            this.ataque *= 1.2;
+            // Aumentar ataque temporalmente (redondeando hacia arriba)
+            this.ataque = (int) Math.ceil(this.ataque * 1.2);
         }
-        if (this.tipo==TipoEnemigo.DRAGON){
-            System.out.println("Aliento de Fuego");
-            //Hemos añadido un arrayilist de heroes para que ataque a
-            // todos los heroes restantes
-            for(Heroe e : heroes){
-                atacar(e);
+        if (this.tipo == TipoEnemigo.DRAGON) {
+            System.out.println("¡Aliento de Fuego!");
+            for (Heroe h : listaHeroes) {
+                if (h.estaVivo()) atacar(h);
             }
         }
+
 
     }
 

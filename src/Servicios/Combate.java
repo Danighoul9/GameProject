@@ -2,7 +2,6 @@ package Servicios;
 
 import Entidades.Enemigo;
 import Entidades.Heroe;
-import Servicios.Juego;
 
 import java.util.ArrayList;
 
@@ -10,13 +9,18 @@ public class Combate {
 
     private int turno;
     private Sala sala;
-    private ArrayList<Heroe> heroes;
+    private ArrayList<Heroe> heroes = new ArrayList<>();
+    public Estadisticas estadisticas;
 
     //Constructor
-    public Combate(Sala sala) {
+    public Combate(Sala sala, ArrayList<Heroe> heroes) {
         this.turno = 1;
         this.sala = sala;
-        this.heroes = new ArrayList<>();
+        this.heroes = heroes;
+
+
+        //De momento no
+        //this.estadisticas = estadisticas;
     }
 
     //Getter y setter
@@ -52,11 +56,16 @@ public class Combate {
     }
 
     public void turnoHeroes() {
-        for (Heroe e : heroes) {
-            sala.getEnemigosVivos();
-            e.atacar(sala.getEnemigosVivos().get(0));
+        for (Heroe h : heroes) {
+            if (!h.estaVivo() || sala.getEnemigosVivos().isEmpty()){
+                continue;
+            }
+            h.usarHabilidadEspecial(sala.getEnemigosVivos().get(0), sala.getEnemigos());
         }
     }
+
+
+
 
     /**
      * Cada enemigo vivo ataca a un héroe aleatorio
@@ -68,11 +77,30 @@ public class Combate {
      * -Despues de generar el numero random en base al .size() del arraylist de heroes,
      * el enemigo ataca a este haciendo un heroes.get() en la posicion RANDOM.
      */
+
+    /*
+    try{
+        respuesta = sc.nextINt();
+    }catch(Exception e){
+        sout(Introduce un dato valido)
+        respuesta = -1;
+    }
+    */
+
     public void turnoEnemigos() {
-        int heroeRandom;
+        ArrayList<Heroe> objetivosValidos = getHeroesVivos();
+
         for (Enemigo e : sala.getEnemigosVivos()) {
-            heroeRandom = (int) (Math.random() * heroes.size());
-            e.atacar(heroes.get(heroeRandom));
+            if (objetivosValidos.isEmpty()){
+                break;
+            }
+
+            // Elegimos un héroe vivo al azar
+            int indice = (int)(Math.random() * objetivosValidos.size());
+            Heroe objetivo = objetivosValidos.get(indice);
+
+            // Pasamos el objetivo Y la lista de héroes (por si el Dragón usa área)
+            e.usarHabilidadEspecial(objetivo, this.heroes);
         }
     }
 
@@ -80,6 +108,7 @@ public class Combate {
      * Bucle principal del combate
      */
     public void iniciarCombate() {
+
 
         /**
          * Comprobamos que haya heroes vivos para poder
@@ -90,50 +119,59 @@ public class Combate {
         for (Heroe h : heroes) {
             if (h.estaVivo()) {
                 heroesVivos = true;
+                IO.print(h.getNombre() + " tiene " + h.getPuntosVidaActual() + "hp restantes.");
             }
         }
 
-        //Comenzamos el combate si en la sala en la que estamos
-        // hay enemigos vivos y nuestros heroes esten vivos.
-        //** AMBAS partes deben cumplirse por lo tanto es un && **
-        while (!sala.todosEnemigosMuertos() && heroesVivos) {
+        // El bucle debe ejecutarse MIENTRAS NO haya terminado el combate
+        while (!combateTerminado()) {
             mostrarEstadoCombate();
             turnoHeroes();
             turnoEnemigos();
-            turno++;
+            this.turno++;
+        }
+        
+        // Si ganamos, distribuimos la experiencia
+        if (sala.todosEnemigosMuertos()) {
+            distribuirExperiencia();
         }
     }
 
     public void mostrarEstadoCombate() {
         for (Heroe e : heroes) {
-            e.getPuntosVidaActual();
+            IO.println(e.getPuntosVidaActual());
         }
         for (Enemigo e : sala.getEnemigos()) {
-            e.getPuntosVidaActual();
+            System.out.println(e.getPuntosVidaActual());
         }
     }
 
     /**
      * true si todos de un bando están muertos
-     *
-     * @return
+     * @return true si el combate ha terminado (todos los enemigos muertos o todos los héroes muertos)
      */
     public boolean combateTerminado() {
+        // Si todos los enemigos están muertos, el combate termina
         if (sala.todosEnemigosMuertos()) {
             System.out.println("Todos los enemigos han muerto");
             return true;
-        } else {
-            for (Heroe h : heroes) {
-                /**
-                 * Si no queda ningun héroe vivo en el
-                 * arraylist de heroes entonces devuelves true y el combate
-                 * termina, por lo contrario, si algun heroe en el
-                 * arraylist esta vivo devolvera false haciendo que el combate
-                 * no termine.
-                 */
-                return (!h.estaVivo());
+        }
+        
+        // Verificar si TODOS los héroes están muertos
+        boolean todosHeroesMuertos = true;
+        for (Heroe h : heroes) {
+            if (h.estaVivo()) {
+                todosHeroesMuertos = false;
+                break;
             }
         }
+        
+        if (todosHeroesMuertos) {
+            System.out.println("Todos los héroes han muerto");
+            return true;
+        }
+        
+        // Si hay héroes vivos y enemigos vivos, el combate continúa
         return false;
     }
 
@@ -151,23 +189,40 @@ public class Combate {
          * cada 1
          */
         if (sala.todosEnemigosMuertos()) {
+            // Sumar la experiencia de TODOS los enemigos (usando la variable del bucle, no siempre el primero)
             for (Enemigo e : sala.getEnemigos()) {
-                experienciaTotal += sala.getEnemigos().get(0).getExpOtorgada();
+                experienciaTotal += e.getExpOtorgada();
             }
+            
+            // Contar héroes vivos
             for (Heroe h : heroes) {
                 if (h.estaVivo()) {
                     contadorHeroesVivos++;
                 }
             }
 
-            experienciaReparto = experienciaTotal / contadorHeroesVivos;
-            for (Heroe h : heroes) {
-                if (h.estaVivo()) {
-                    h.ganarExperiencia(experienciaReparto);
+            // Solo repartir si hay héroes vivos (evitar división por cero)
+            if (contadorHeroesVivos > 0) {
+                experienciaReparto = experienciaTotal / contadorHeroesVivos;
+                for (Heroe h : heroes) {
+                    if (h.estaVivo()) {
+                        h.ganarExperiencia(experienciaReparto);
+                        h.subirNivel(); // Intentar subir de nivel después de ganar experiencia
+                    }
                 }
             }
         }
 
+    }
+
+    private ArrayList<Heroe> getHeroesVivos() {
+        ArrayList<Heroe> vivos = new ArrayList<>();
+        for (Heroe h : this.heroes) {
+            if (h.estaVivo()) {
+                vivos.add(h);
+            }
+        }
+        return vivos;
     }
 }
 

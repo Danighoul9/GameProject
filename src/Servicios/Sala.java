@@ -19,7 +19,8 @@ public class Sala {
             this.numeroSala = numeroSala;
             this.completada = false;
             this.enemigos = new ArrayList<>();
-            generarEnemigos();
+            // No generar aquí, se generará desde Juego.inicializarJuego()
+            // generarEnemigos();
         }
 
         //Getter y setters
@@ -62,32 +63,45 @@ public class Sala {
             int aleatorio;
             switch (this.numeroSala) {
                 case 1, 2 -> {
-                    aleatorio = (int) (Math.random() * 3);
+                    // Generar número aleatorio entre 0 y 2 (3 opciones: 0, 1, 2)
+                    // Pero queremos que siempre haya enemigos, así que usamos 1-3
+                    aleatorio = 1 + (int) (Math.random() * 3); // Valores: 1, 2, 3
                     switch (aleatorio) {
                         case 1, 2 -> {
                             Enemigo goblin1 = new Enemigo("Goblin de Fuego", TipoEnemigo.GOBLIN);
                             Enemigo goblin2 = new Enemigo("Goblin de Hielo", TipoEnemigo.GOBLIN);
+                            enemigos.add(goblin1);
+                            enemigos.add(goblin2);
                         }
                         case 3 ->{
                             Enemigo goblin11 = new Enemigo("Goblin de Primavera", TipoEnemigo.GOBLIN);
                             Enemigo goblin22 = new Enemigo("Goblin de Hierro", TipoEnemigo.GOBLIN);
                             Enemigo goblin3 = new Enemigo("Goblin Tosco", TipoEnemigo.GOBLIN);
+                            enemigos.add(goblin3);
+                            enemigos.add(goblin11);
+                            enemigos.add(goblin22);
                         }
                     }
                 }
 
                 case 3, 4 -> {
-                    aleatorio = (int) (Math.random() * 2);
+                    // Generar número aleatorio entre 1 y 2 (2 opciones)
+                    aleatorio = 1 + (int) (Math.random() * 2); // Valores: 1, 2
                     switch (aleatorio) {
                         case 1 -> {
                             Enemigo orco = new Enemigo("Orco Galactico", TipoEnemigo.ORCO);
                             Enemigo goblin = new Enemigo("Goblin Macarra", TipoEnemigo.GOBLIN);
+                            enemigos.add(orco);
+                            enemigos.add(goblin);
                         }
 
                         case 2 -> {
                             Enemigo orco1 = new Enemigo("Orco Galactico", TipoEnemigo.ORCO);
                             Enemigo orco2 = new Enemigo("Orco Metalico", TipoEnemigo.ORCO);
                             Enemigo goblin4 = new Enemigo("Goblin Remolon", TipoEnemigo.GOBLIN);
+                            enemigos.add(orco1);
+                            enemigos.add(orco2);
+                            enemigos.add(goblin4);
                         }
                     }
                 }
@@ -97,6 +111,9 @@ public class Sala {
                     Enemigo dragon = new Enemigo("Dragon del end", TipoEnemigo.DRAGON);
                     Enemigo orco3 = new Enemigo("Orco Pelon", TipoEnemigo.ORCO);
                     Enemigo orco4 = new Enemigo("Orco Paradisiaco", TipoEnemigo.ORCO);
+                    enemigos.add(dragon);
+                    enemigos.add(orco3);
+                    enemigos.add(orco4);
                 }
             }
         }

@@ -1,4 +1,4 @@
-`⚔️ Nuestro Proyecto RPG - 1º DAW
+⚔️ Nuestro Proyecto RPG - 1º DAW
 ¡Hola! Este es el proyecto final que hemos estado currando para clase de Programación. 
 Es un juego de rol por consola hecho 100% en Java donde te metes en una mazmorra a darte de palos con bichos y monstruos.
 

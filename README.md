@@ -12,7 +12,7 @@ Somos un grupo de 4 alumnos de primero de DAW y este es nuestro primer trabajo e
 - Daniel Díaz Campoy
 - Mirian González Rodríguez
 - Hugo Cayuela Egea
-- Daniel Fernández Alarcón
+- Daniel Fernández Alcon
 
 ---
 

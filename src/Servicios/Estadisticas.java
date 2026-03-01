@@ -35,6 +35,5 @@ public class Estadisticas {
         System.out.println("Enemigos derrotados: " + enemigosDerrotados);
         System.out.println("Salas completadas: " + salasCompletadas);
     }
-    //Trabajo realizado
 }
 

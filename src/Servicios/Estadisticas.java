@@ -7,13 +7,11 @@ public class Estadisticas {
     private int enemigosDerrotados;
     private int salasCompletadas;
 
-
-    /**
     public void sumarTurno() {
         turnosTotales++;
     }
 
-    public void sumarDanoHecho() {
+    public void sumarDanoHecho(int danio) {
         danoHechoHeroes += danio;
     }
 
@@ -21,23 +19,21 @@ public class Estadisticas {
         danoRecibidoHeroes += danio;
     }
 
-    public void enemigosderrotados() {
+    public void enemigoDerrotado() {
         enemigosDerrotados++;
     }
 
-    public void salasCompletas() {
+    public void salaCompletada() {
         salasCompletadas++;
     }
 
     public void mostrar() {
-        System.out.println("ESTADÍSTICAS FINALES");
+        System.out.println("=== ESTADÍSTICAS FINALES ===");
         System.out.println("Turnos totales: " + turnosTotales);
         System.out.println("Daño hecho por héroes: " + danoHechoHeroes);
         System.out.println("Daño recibido por héroes: " + danoRecibidoHeroes);
         System.out.println("Enemigos derrotados: " + enemigosDerrotados);
         System.out.println("Salas completadas: " + salasCompletadas);
-
     }
-     */
 }
-            
+

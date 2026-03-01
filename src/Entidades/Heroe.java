@@ -19,20 +19,20 @@ public class Heroe extends Personaje{
             this.defensa = 15;
             this.puntosVidaMax = this.puntosVidaActual;
         } else if (this.tipo == TipoHeroe.ARQUERO) {
-            this.puntosVidaActual = 60;
-            this.ataque = 30;
-            this.defensa = 5;
-            this.puntosVidaMax = this.puntosVidaActual;
-        } else if (this.tipo == TipoHeroe.MAGO) {
             this.puntosVidaActual = 80;
             this.ataque = 25;
             this.defensa = 10;
+            this.puntosVidaMax = this.puntosVidaActual;
+        } else if (this.tipo == TipoHeroe.MAGO) {
+            this.puntosVidaActual = 60;
+            this.ataque = 30;
+            this.defensa = 5;
             this.puntosVidaMax=this.puntosVidaActual;
 
         } else if (this.tipo == TipoHeroe.CLERIGO) {
-            this.puntosVidaActual = 20;
-            this.ataque = 3;
-            this.defensa = 15;
+            this.puntosVidaActual = 70;
+            this.ataque = 10;
+            this.defensa = 12;
             this.puntosVidaMax=this.puntosVidaActual;
 
         } else if (this.tipo == TipoHeroe.JACKPOT) {
@@ -117,14 +117,17 @@ public class Heroe extends Personaje{
             objetivo.recibirDanio(this.ataque * 2);
         }
         if (this.tipo == TipoHeroe.CLERIGO){
-            System.out.println(nombre + " uso CURACIÓN!");
-            objetivo.curar(this.ataque * 10);
+            System.out.println(nombre + " usa CURACIÓN!");
+            if (objetivo != null) objetivo.curar(this.ataque * 10);
         }
         if (this.tipo == TipoHeroe.JACKPOT){
-            int numeroAleatorio = (int)(Math.random() * 20);
+            int numeroAleatorio = 1 + (int)(Math.random() * 20);
             if(numeroAleatorio == 7 || numeroAleatorio == 20 ||
                numeroAleatorio == 5 || numeroAleatorio == 10){
-            objetivo.recibirDanio(this.ataque * 5);
+                System.out.println(nombre + " tiene suerte!");
+                objetivo.recibirDanio(this.ataque * 5);
+            } else {
+                System.out.println(nombre + " no ha tenido suerte...");
             }
         }
 

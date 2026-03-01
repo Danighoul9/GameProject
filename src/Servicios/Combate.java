@@ -2,25 +2,25 @@ package Servicios;
 
 import Entidades.Enemigo;
 import Entidades.Heroe;
+import Entidades.TipoHeroe;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Combate {
 
+    Scanner sc = new Scanner(System.in);
     private int turno;
     private Sala sala;
     private ArrayList<Heroe> heroes = new ArrayList<>();
-    public Estadisticas estadisticas;
+    private Estadisticas estadisticas;
 
     //Constructor
-    public Combate(Sala sala, ArrayList<Heroe> heroes) {
+    public Combate(Sala sala, ArrayList<Heroe> heroes, Estadisticas estadisticas) {
         this.turno = 1;
         this.sala = sala;
         this.heroes = heroes;
-
-
-        //De momento no
-        //this.estadisticas = estadisticas;
+        this.estadisticas = estadisticas;
     }
 
     //Getter y setter
@@ -56,18 +56,68 @@ public class Combate {
     }
 
     public void turnoHeroes() {
-        int usosHabEspecial = 1;
+        Scanner sc = new Scanner(System.in);
+        ArrayList<Enemigo> enemigosVivos = sala.getEnemigosVivos();
+        ArrayList<Heroe> heroesVivos = getHeroesVivos();
+
         for (Heroe h : heroes) {
-            if (!h.estaVivo() || sala.getEnemigosVivos().isEmpty()){
-                continue;
+            if (!h.estaVivo()) continue;
+            if (enemigosVivos.isEmpty()) break;
+
+            System.out.println("--- Turno de " + h.getNombre() + " (" + h.getTipo() + ") ---");
+            System.out.println("1. Atacar normal   2. Habilidad especial");
+            int eleccion = 0;
+            try {
+                eleccion = sc.nextInt();
+            } catch (NumberFormatException e) {
+                eleccion = 1;
             }
-            if (usosHabEspecial != 0){
-                h.usarHabilidadEspecial(sala.getEnemigosVivos().get(0), sala.getEnemigos());
-                usosHabEspecial--;
+
+            if (eleccion == 2) {
+                if (h.getTipo() == TipoHeroe.MAGO) {
+                    h.usarHabilidadEspecial(elegirEnemigo(enemigosVivos), sala.getEnemigos());
+                } else if (h.getTipo() == TipoHeroe.CLERIGO) {
+                    System.out.println("Curar a que heroe?");
+                    for (int i = 0; i < heroesVivos.size(); i++) {
+                        Heroe aliado = heroesVivos.get(i);
+                        System.out.println((i + 1) + ". " + aliado.getNombre() + " (" + aliado.getPuntosVidaActual() + "/" + aliado.getPuntosVidaMax() + " HP)");
+                    }
+                    try {
+                        int resUsuario = sc.nextInt() - 1;
+                        if (resUsuario >= 0 && resUsuario < heroesVivos.size()) {
+                            h.usarHabilidadEspecial(heroesVivos.get(resUsuario), sala.getEnemigos());
+                        }
+                    } catch (NumberFormatException ignored) {}
+                } else {
+                    Enemigo objetivo = elegirEnemigo(enemigosVivos);
+                    if (objetivo != null){
+                        h.usarHabilidadEspecial(objetivo, sala.getEnemigos());
+                    }
+                }
             } else {
-                h.atacar(sala.getEnemigosVivos().get(0));
+                Enemigo objetivo = elegirEnemigo(enemigosVivos);
+                if (objetivo != null) h.atacar(objetivo);
             }
+            enemigosVivos = sala.getEnemigosVivos();
+            heroesVivos = getHeroesVivos();
         }
+    }
+
+    private Enemigo elegirEnemigo(ArrayList<Enemigo> enemigosVivos) {
+        System.out.println("A quien atacar?");
+        for (int i = 0; i < enemigosVivos.size(); i++) {
+            Enemigo e = enemigosVivos.get(i);
+            System.out.println((i + 1) + ". " + e.getNombre() + " (" + e.getPuntosVidaActual() + "/" + e.getPuntosVidaMax() + " HP)");
+        }
+        try {
+            int numEnemigo = Integer.parseInt(sc.nextLine()) - 1;
+            if (numEnemigo >= 0 && numEnemigo < enemigosVivos.size()) {
+                return enemigosVivos.get(numEnemigo);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
     /**
@@ -128,6 +178,9 @@ public class Combate {
             turnoHeroes();
             turnoEnemigos();
             this.turno++;
+            if (estadisticas != null) {
+                estadisticas.sumarTurno();
+            }
         }
         
         // Si ganamos, distribuimos la experiencia
@@ -137,11 +190,16 @@ public class Combate {
     }
 
     public void mostrarEstadoCombate() {
-        for (Heroe e : heroes) {
-            IO.println(e.getPuntosVidaActual());
+        IO.println("--- Estado del combate ---");
+        IO.println("Heroes:");
+        for (Heroe h : heroes) {
+            IO.println(" - " + h.getNombre() + " (" + h.getTipo() + "): " +
+                    h.getPuntosVidaActual() + "/" + h.getPuntosVidaMax() + " HP");
         }
+        IO.println("Enemigos:");
         for (Enemigo e : sala.getEnemigos()) {
-            System.out.println(e.getPuntosVidaActual());
+            IO.println(" - " + e.getNombre() + " (" + e.getTipo() + "): " +
+                    e.getPuntosVidaActual() + "/" + e.getPuntosVidaMax() + " HP");
         }
     }
 
@@ -191,6 +249,9 @@ public class Combate {
             // Sumar la experiencia de TODOS los enemigos (usando la variable del bucle, no siempre el primero)
             for (Enemigo e : sala.getEnemigos()) {
                 experienciaTotal += e.getExpOtorgada();
+                if (estadisticas != null) {
+                    estadisticas.enemigoDerrotado();
+                }
             }
             
             // Contar héroes vivos
@@ -209,6 +270,10 @@ public class Combate {
                         h.subirNivel(); // Intentar subir de nivel después de ganar experiencia
                     }
                 }
+            }
+
+            if (estadisticas != null) {
+                estadisticas.salaCompletada();
             }
         }
 

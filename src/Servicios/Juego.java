@@ -15,6 +15,7 @@ public class Juego {
     private int salaActual; //(0-4)
     private boolean juegoTerminado;
     private Estadisticas estadisticas;
+    private int cooldownDescanso; // si es 0 se puede descansar, al usarlo se pone a 2 y baja 1 por sala completada
 
     public Juego(int salaActual) {
         // Ajustar para que salaActual sea un índice válido (0-4)
@@ -24,6 +25,7 @@ public class Juego {
         this.equipo = new ArrayList<>();
         this.salas = new ArrayList<>();
         this.juegoTerminado = false;
+        this.cooldownDescanso = 0;
     }
 
     public ArrayList<Heroe> getEquipo() {
@@ -75,7 +77,7 @@ public class Juego {
         ArrayList<Heroe> equipo = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
             System.out.println("Elige a un heroe" + i + ":");
-            System.out.println("1-Arquero 2-Guerrero 3-Mago");
+            System.out.println("1-Arquero 2-Guerrero 3-Mago 4-Clerigo 5-Jackpot");
 
             int opcion = 0;
             boolean valido = false;
@@ -83,7 +85,7 @@ public class Juego {
                 try {
                     opcion = sc.nextInt();
                     sc.nextLine();
-                    if(opcion >= 1 && opcion <= 3) {
+                    if(opcion >= 1 && opcion <= 5) {
                         valido = true;
                     } else {
                         System.out.println("Opción no válida. Intenta de nuevo.");
@@ -110,6 +112,12 @@ public class Juego {
                 case 3 -> {
                     h = new Heroe(nombre, TipoHeroe.MAGO);
                 }
+                case 4 -> {
+                    h = new Heroe(nombre, TipoHeroe.CLERIGO);
+                }
+                case 5 -> {
+                    h = new Heroe(nombre, TipoHeroe.JACKPOT);
+                }
             }
             if (h != null) {
                 h.getItem().add(new Item(TipoItem.POCION_PEQUENA, 30));
@@ -132,16 +140,18 @@ public class Juego {
             }
 
             // 2. CREAMOS EL COMBATE CON LA SALA QUE TOCA
-            Combate c = new Combate(salas.get(salaActual), this.equipo);
+            Combate c = new Combate(salas.get(salaActual), this.equipo, this.estadisticas);
 
             System.out.println("--- ENTRANDO A LA SALA " + (salaActual + 1) + " ---");
             c.iniciarCombate();
 
-            // 3. Revisamos si hemos muerto todos
+            // 3. Revisamos si han muerto todos nuestros heroes
             verificarEstadoJuego();
 
             // Si hemos perdido, salimos del bucle
-            if (juegoTerminado) break;
+            if (juegoTerminado){
+                break;
+            }
 
             // 4. Si todos los enemigos están muertos, marcamos la sala como completada
             if (salas.get(salaActual).todosEnemigosMuertos()) {
@@ -150,6 +160,7 @@ public class Juego {
 
             // 5. Pasamos a la siguiente sala
             salaActual++;
+            if (cooldownDescanso > 0) cooldownDescanso--;
 
             // Si hemos pasado la última sala, ganamos
             if (salaActual >= salas.size()) {
@@ -157,7 +168,7 @@ public class Juego {
             }
         }
 
-        // Al salir del bucle, mostramos cómo ha quedado la cosa
+        // Al salir del bucle, mostramos un extra añadido que son las ESTAADISTICAS algo sencillito.
         mostrarResultadoFInal();
     }
 
@@ -171,7 +182,11 @@ public class Juego {
             IO.println("----* MENU ENTRE SALAS *----");
             IO.println("1. Ver equipo");
             IO.println("2. Usar poción");
-            IO.println("3. Descansar");
+            if (cooldownDescanso == 0) {
+                IO.println("3. Descansar");
+            } else {
+                IO.println("3. Descansar (no disponible, " + cooldownDescanso + " salas restantes)");
+            }
             IO.println("4. Continuar");
 
             try {
@@ -274,11 +289,16 @@ public class Juego {
 
 
                 case 3 -> {
-                    IO.println("El equipo descansa (+20 HP)");
-                    for (Heroe h : equipo) {
-                        if (h.estaVivo()) {
-                            h.curar(20);
+                    if (cooldownDescanso > 0) {
+                        IO.println("No puedes descansar todavia. Espera " + cooldownDescanso + " sala(s) mas.");
+                    } else {
+                        IO.println("El equipo descansa (+20 HP)");
+                        for (Heroe h : equipo) {
+                            if (h.estaVivo()) {
+                                h.curar(20);
+                            }
                         }
+                        cooldownDescanso = 2;
                     }
                 }
 
@@ -337,6 +357,11 @@ public class Juego {
             // Si no hay héroes vivos -> DERROTA
             IO.println("GAME OVER");
             IO.println("El equipo ha caído en la Sala " + (salaActual + 1));
+        }
+
+        if (estadisticas != null) {
+            IO.println();
+            estadisticas.mostrar();
         }
     }
 }
